@@ -1,0 +1,32 @@
+name: pim-bridge-basic
+topology:
+        nodes:
+                rp:
+                        kind: linux
+                        image: frrouting/frr:v7.5.0
+                        binds:
+                                - configs/rp:/etc/frr
+                fhr:
+                        kind: linux
+                        image: frrouting/frr:v7.5.0
+                        binds:
+                                - configs/fhr:/etc/frr
+                lhr:
+                        kind: linux
+                        image: frrouting/frr:v7.5.0
+                        binds:
+                                - configs/lhr:/etc/frr
+                source:
+                        kind: linux
+                        image: alpine:latest
+                consumer:
+                        kind: linux
+                        image: alpine:latest
+                pimbridge:
+                        kind: bridge
+        links:
+                - endpoints: ["fhr:eth1", "pimbridge:eth1"]
+                - endpoints: ["lhr:eth1", "pimbridge:eth2"]
+                - endpoints: ["rp:eth1", "pimbridge:eth3"]
+                - endpoints: ["consumer:eth1", "lhr:eth2"]
+                - endpoints: ["source:eth1", "fhr:eth2"]
